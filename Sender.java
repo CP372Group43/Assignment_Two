@@ -1,4 +1,5 @@
 
+
 import java.io.* ;
 import java.net.* ;
 import java.util.* ;
@@ -29,34 +30,19 @@ public class Sender implements Runnable{
 		this.timeout=time;
 		try {
 			this.ackSocket = new DatagramSocket(2222);
+			this.run();
+
 		}catch(Exception e) {
 			e.printStackTrace(System.out);
 		}
-		this.run();
 	}
-	
-	public void sendUdp() throws Exception {
-		try {
-			new UdpSender(ackSocket, this.datafile,this.timeout);
-		} catch(Exception e) {
-			System.out.println("???");
-		    	e.printStackTrace(System.out);
-		    	this.ackSocket.close();
-			System.exit(1);
-		}
-	}
-
 	public void run() {
 	    	System.out.print("Sender On \n");
-    		byte[] buf =new byte[124];
 		try {			
 			while(true) {
-				DatagramPacket packet = new DatagramPacket(buf,buf.length);
-				packet.setLength(buf.length);
 				// wait for next transfer request from receiver
-				ackSocket.receive(packet);
 				// send receiver the data
-				new UdpSender(ackSocket, this.datafile,this.timeout);
+				new UdpSender(this.ackSocket, this.datafile,this.timeout);
 			}
 		}catch(Exception e){
 			e.printStackTrace(System.out);

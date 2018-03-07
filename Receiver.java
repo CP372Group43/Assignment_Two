@@ -1,4 +1,5 @@
 
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -33,10 +34,10 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
     public static JButton reliable_toggle_button;
     
     public static  Boolean is_reliable = false;
-
-    int total=0,inorder=0,prev;
+    int total=0,inorder=0,prev,starts=0;
     
     public static DatagramSocket seq = null;
+    
 
     StringReader read = null;
 	public Socket ReceiverSocket = null;
@@ -68,7 +69,7 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 			FileOutputStream stream = new FileOutputStream("testme.txt");
 			while(true) {
 				packet.setLength(buf.length);
-				seq.receive(packet);
+				this.seq.receive(packet);
 				byte[] str = packet.getData();
 				System.out.println("str"+str.length);
 				seqbyte[0]= str[0];
@@ -85,11 +86,12 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 				String eot = readeot.toString();
 				System.out.println("seqnum"+seqnum);
 				System.out.println("eot"+eot);
+			
 				if(!eot.equals("0") && this.total!=0) {
+					stream.write(str, 6, 118);
 					System.exit(1);
-				}else if(total!=0){
-				}else {
-					this.prev=1;
+
+				}else{
 					stream.write(str, 6, 118);
 
 				}
@@ -109,17 +111,11 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 		String fileName = body_text_area.getText();
 		
 		try {
-			if(seq != null) {
+			if(this.seq != null) {
 				seq.close();
 			}
-			seq = new DatagramSocket(rPort);
-			
-            DatagramPacket sendPacket = null;
-            String data = "";
-			byte[] message = "transfer".getBytes();
-			sendPacket = new DatagramPacket(message, message.length, InetAddress.getByName(sAddress), sPort);
-			seq.send(sendPacket);	
-			System.out.println("Sent start transmission message..");
+			this.seq = new DatagramSocket(rPort);
+			this.run();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

@@ -1,4 +1,5 @@
 
+
 import java.io.* ;
 import java.net.* ;
 import java.nio.ByteBuffer;
@@ -20,7 +21,7 @@ public class UdpSender implements Runnable{
 		this.timeout=timeout;
 		this.ackport=ackport;
 		this.seqport=s;
-		this.seqnum="0001";
+		this.seqnum="0000";
 		this.isEot="0";
 		try {
 		this.run();
@@ -58,7 +59,7 @@ public class UdpSender implements Runnable{
 			System.out.println(this.seqnum.toString().getBytes());
 			this.packet = new DatagramPacket(offdata,offdata.length, InetAddress.getByName("localhost"),4000);
 			//ByteBuffer bbuf = ByteBuffer.allocate(124)
-			if(bytestr!=-1 && reader.available()>0) {
+			if(bytestr!=-1 && reader.available()>=1) {
 				try {				
 					ByteArrayOutputStream read = new ByteArrayOutputStream(124);
 					ByteArrayOutputStream out = new ByteArrayOutputStream();
