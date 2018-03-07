@@ -33,14 +33,11 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
     public static JButton reliable_toggle_button;
     
     public static  Boolean is_reliable = false;
-<<<<<<< HEAD
+
     int total=0,inorder=0,prev;
-=======
     
     public static DatagramSocket seq = null;
-    
 
->>>>>>> abfd2f4636bf6c367eb02fbb624b93bc1ddbab46
     StringReader read = null;
 	public Socket ReceiverSocket = null;
 	
