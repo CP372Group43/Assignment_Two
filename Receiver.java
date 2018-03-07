@@ -29,7 +29,9 @@ public class Receiver extends JFrame implements ActionListener {
     public static JTextField body_text_area;
     public static JTextField rec_packets_text_field;
     public static JTextArea response_text_area;
-    public static JButton connect_button;
+    public static JButton reliable_toggle_button;
+    
+    public static  Boolean is_reliable = false;
 
     StringReader read = null;
 	public Socket ReceiverSocket = null;
@@ -102,8 +104,8 @@ public class Receiver extends JFrame implements ActionListener {
         transfer_button.setActionCommand("transfer");
         transfer_button.addActionListener(this);
         
-        // add reliable/unreliable Button
-        JButton reliable_toggle_button = new JButton("Reliable"); 
+        // add reliable/unreliable Button - default false
+        reliable_toggle_button = new JButton("Reliable"); 
         reliable_toggle_button.setActionCommand("reliable_toggle");
         reliable_toggle_button.addActionListener(this);
         
@@ -125,7 +127,14 @@ public class Receiver extends JFrame implements ActionListener {
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		
+		if("reliable_toggle".equals(e.getActionCommand())) {
+			is_reliable = !is_reliable;
+			if(is_reliable) {
+				reliable_toggle_button.setText("Unreliable");
+			} else {
+				reliable_toggle_button.setText("Reliable");
+			}
+		}		
 	}
 	
 }
