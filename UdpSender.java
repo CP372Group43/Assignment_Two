@@ -1,64 +1,92 @@
 
 import java.io.* ;
 import java.net.* ;
+import java.nio.ByteBuffer;
 import java.util.* ;
 
-public class UdpSender {
+public class UdpSender implements Runnable{
 
 	String file;
 	int timeout;
-	Integer seqnum,isEot;
+	String seqnum,isEot;
 	DatagramPacket packet = null;
 	DatagramPacket ack=null;
 	DatagramSocket seqport = null;
 	DatagramSocket ackport = null;
 	byte[] ackbuf = new byte[4];
-	byte[] buf = new byte[124];
-	boolean isRun = true;
+	byte[] buf = new byte[118];
 	public UdpSender(DatagramSocket s,String file, int timeout) throws Exception{
-		System.out.println("new udp sender created..");
-
 		this.file=file;
 		this.timeout=timeout;
 		this.ackport=ackport;
 		this.seqport=s;
-		this.seqnum=new Integer(0);
-		this.isEot=new Integer(0);
+		this.seqnum="0000";
+		this.isEot="0";
+		try {
+		this.run();
+		}catch(Exception e) {
+			throw new Exception();
+		}
+	}
+	public void run(){
+		
+		
 		try {
 			FileInputStream reader = new FileInputStream("test.txt");
-			this.SendPacket(reader);
+			SendPacket(reader);
 			reader.close();
 		}catch(Exception e) {
-			e.printStackTrace(System.out);
+    		e.printStackTrace(System.out);
 		}
 	}
 	public void SendPacket(FileInputStream reader) throws Exception {
 		int bytestr;
-		byte[] seqoffset;
-		byte[] eotoffset;
+		byte[] seqoffset = new byte[4];
+		byte[] eotoffset = new byte[2];
+		eotoffset[0]=0;
+		eotoffset[1]=0;
 		byte[] offdata = new byte[124];
 		int offsetlen;
-		isRun = true;
+		boolean isRun = true;
+		System.out.println("insnd");
+
 		while(isRun) {
 			bytestr=reader.read(this.buf);
 			String input;
 			//this.buf=input.getBytes();
-			int lenseq = this.seqnum.toString().getBytes().length;
+			int lenseq = this.seqnum.toString().getBytes().length + this.isEot.toString().getBytes().length;
 			System.out.println(this.seqnum.toString().getBytes());
-			System.out.print("bytestr = " + bytestr + "   available = " + reader.available());
+			this.packet = new DatagramPacket(offdata,offdata.length, InetAddress.getByName("localhost"),4000);
+			//ByteBuffer bbuf = ByteBuffer.allocate(124)
 			if(bytestr!=-1 && reader.available()>0) {
 				try {				
-					ByteArrayOutputStream read = new ByteArrayOutputStream(119);
+					ByteArrayOutputStream read = new ByteArrayOutputStream(124);
+					ByteArrayOutputStream out = new ByteArrayOutputStream();
+					
+					System.out.println(lenseq);
+					seqoffset=this.seqnum.getBytes();
+					eotoffset=this.isEot.getBytes();
+					out.write(seqoffset);
+					out.write(eotoffset);
+					byte[] c= out.toByteArray();
+					read.write(c);
 					read.write(this.buf);
-					System.out.println("eotlen"+ this.isEot.toString());
-					input=  this.seqnum.toString() +this.isEot.toString()+read.toString();
-					System.out.println(input);
-					System.out.println(input.getBytes());
-					offdata=input.getBytes();
-					System.out.print("-------HEREHEREHEREHEREHERE------");
-					this.packet = new DatagramPacket(offdata,offdata.length, InetAddress.getByName("localhost"), 2222);
+
+					System.out.println(read.toString());
+					offdata=read.toByteArray();
 					this.seqport.send(this.packet);
-					this.seqnum+=1;
+					Integer nextseq= Integer.parseInt(this.seqnum)+1;
+					int len=nextseq.toString().length();
+					if(len==4) {
+						this.seqnum=nextseq.toString();
+					}else if(len==3) {
+						this.seqnum="0"+nextseq.toString();
+					}else if(len==2) {
+						this.seqnum="00"+nextseq.toString();
+					}else if(len==1) {
+						this.seqnum="000"+nextseq.toString();
+					}
+					
 					//this.timeout();
 				}catch(Exception e) {
 	        			e.printStackTrace(System.out);
@@ -68,7 +96,28 @@ public class UdpSender {
 			}else {
 				System.out.println("endoffile");
 				isRun=false;
-				this.isEot=1;
+				this.isEot="1";
+				try {
+					ByteArrayOutputStream read = new ByteArrayOutputStream(124);
+					ByteArrayOutputStream out = new ByteArrayOutputStream();
+					
+					System.out.println("waduhek");
+					System.out.println(lenseq);
+					seqoffset=this.seqnum.toString().getBytes();
+					eotoffset=this.isEot.toString().getBytes();
+					out.write(seqoffset);
+					out.write(eotoffset);
+					byte[] c= out.toByteArray();
+					read.write(c);
+					read.write(this.buf);
+
+					System.out.println(read.toString());
+					offdata=read.toByteArray();
+					this.seqport.send(this.packet);
+	//				this.timeout();
+				}catch(Exception e) {
+				}
+				
 			}
 			
 		}

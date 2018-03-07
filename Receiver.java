@@ -46,38 +46,44 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 	}
 	
 	public void run() {
+		int sPort = Integer.parseInt(senderport_text_field.getText());
+		String sAddress = host_text_field.getText();
+		int rPort = Integer.parseInt(port_text_field.getText());
+		String fileName = body_text_area.getText();
+		
 		System.out.println("Run called..");
 		
 		byte[] buf =new byte[124];
 		byte[] seqbyte = new byte[4];
 		byte[] isEot = new byte[2];
+		String prev,current;
+		prev="0";
 		try {
 			File infile = new File("testme.txt");
 			BufferedWriter writef = new BufferedWriter(new FileWriter(infile));
 			ByteArrayOutputStream input= new ByteArrayOutputStream(124);
 			DatagramPacket packet = new DatagramPacket(buf,buf.length);
-			FileChannel fchannel =  new FileOutputStream(infile,true).getChannel();
-			ByteBuffer bbuf = ByteBuffer.allocate(124);
+			FileOutputStream stream = new FileOutputStream("testme.txt");
 			while(true) {
 				packet.setLength(buf.length);
 				seq.receive(packet);
 				byte[] str = packet.getData();
-				bbuf.wrap(str);
 				System.out.println("str"+str.length);
-				seqbyte[0]= str[3];
-				seqbyte[1]= str[2];
-				seqbyte[2]= str[1];
-				seqbyte[3]= str[0];
+				seqbyte[0]= str[0];
+				seqbyte[1]= str[1];
+				seqbyte[2]= str[2];
+				seqbyte[3]= str[3];
 				isEot[0]=str[4];
-				ByteArrayOutputStream readseq = new ByteArrayOutputStream(3);
-				ByteArrayOutputStream readeot = new ByteArrayOutputStream(1);
+				ByteArrayOutputStream readseq = new ByteArrayOutputStream(4);
+				ByteArrayOutputStream readeot = new ByteArrayOutputStream(2);
 				readseq.write(seqbyte);
 				readeot.write(isEot);
 				String seqnum=readseq.toString();
+			
 				String eot = readeot.toString();
 				System.out.println("seqnum"+seqnum);
 				System.out.println("eot"+eot);
-				fchannel.write(bbuf);
+				stream.write(str, 6, 118);
 			}
 			//write.close();
 		}catch(Exception e){
@@ -93,14 +99,10 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 		String fileName = body_text_area.getText();
 		
 		try {
-			try {
-				if(seq != null) {
-					seq.close();
-				}
-				seq = new DatagramSocket(rPort);
-			} catch(Exception e) {
-				e.printStackTrace();
+			if(seq != null) {
+				seq.close();
 			}
+			seq = new DatagramSocket(rPort);
 			
             DatagramPacket sendPacket = null;
             String data = "";
@@ -136,7 +138,7 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
         	sender_port.add(new JLabel("Sender Port: "));
     		senderport_text_field = new JTextField("",10);
     		senderport_text_field.setBackground(Color.WHITE);
-    		senderport_text_field.setText("3333");
+    		senderport_text_field.setText("2222");
     		sender_port.add(senderport_text_field);
     		
     		// receiver ack port field
@@ -144,7 +146,7 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
         	receiver_port_panel.add(new JLabel("Receiver Ack Port: "));
     		port_text_field = new JTextField("", 10);
     		port_text_field.setBackground(Color.WHITE);
-    		port_text_field.setText("2222");
+    		port_text_field.setText("3333");
     		receiver_port_panel.add(port_text_field);
 
     		// file name
