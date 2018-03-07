@@ -1,9 +1,12 @@
 
+<<<<<<< HEAD
 import java.io.* ;
 import java.net.* ;
 import java.util.* ;
 
 
+=======
+>>>>>>> 16c4a8dc3d715211c75a8e3b1b20320e56f3229a
 
 
 public class Sender implements Runnable{
@@ -19,16 +22,17 @@ public class Sender implements Runnable{
 		ackport=Integer.parseInt(args[2]);
 		sendfile=args[3];
 		time=Integer.parseInt(args[2]);
-		new Sender(hostaddr,seqport,ackport,sendfile,time);	}
+		new Sender(hostaddr,seqport,ackport,sendfile,time);	
+	}
+	
 	public Sender(String hostaddr,int seqport,int ackport, String sendfile, int time) {
-		
 		this.hostaddress=hostaddr;
 		this.hostport=seqport;
 		this.hostackport=ackport;
 		this.datafile=sendfile;
 		this.timeout=time;
 		try {
-		this.serversocket = new DatagramSocket(9001);
+			this.serversocket = new DatagramSocket(3000);
 		}catch(Exception e) {
 			e.printStackTrace(System.out);
 		}
