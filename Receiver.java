@@ -45,39 +45,35 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 		byte[] buf =new byte[124];
 		byte[] seqbyte = new byte[4];
 		byte[] isEot = new byte[2];
+		String prev,current;
+		prev="0";
 		try {
-<<<<<<< HEAD
 			File infile = new File("testme.txt");
-			DatagramSocket seq = new DatagramSocket(0123);
 			BufferedWriter writef = new BufferedWriter(new FileWriter(infile));
-=======
 			DatagramSocket seq = new DatagramSocket(4000);
-			BufferedWriter writef = new BufferedWriter(new FileWriter("testme.txt"));
->>>>>>> 16c4a8dc3d715211c75a8e3b1b20320e56f3229a
 			ByteArrayOutputStream input= new ByteArrayOutputStream(124);
 			DatagramPacket packet = new DatagramPacket(buf,buf.length);
-			FileChannel fchannel =  new FileOutputStream(infile,true).getChannel();
-			ByteBuffer bbuf = ByteBuffer.allocate(124);
+			FileOutputStream stream = new FileOutputStream("testme.txt");
 			while(true) {
 				packet.setLength(buf.length);
 				seq.receive(packet);
 				byte[] str = packet.getData();
-				bbuf.wrap(str);
 				System.out.println("str"+str.length);
-				seqbyte[0]= str[3];
-				seqbyte[1]= str[2];
-				seqbyte[2]= str[1];
-				seqbyte[3]= str[0];
+				seqbyte[0]= str[0];
+				seqbyte[1]= str[1];
+				seqbyte[2]= str[2];
+				seqbyte[3]= str[3];
 				isEot[0]=str[4];
-				ByteArrayOutputStream readseq = new ByteArrayOutputStream(3);
-				ByteArrayOutputStream readeot = new ByteArrayOutputStream(1);
+				ByteArrayOutputStream readseq = new ByteArrayOutputStream(4);
+				ByteArrayOutputStream readeot = new ByteArrayOutputStream(2);
 				readseq.write(seqbyte);
 				readeot.write(isEot);
 				String seqnum=readseq.toString();
+			
 				String eot = readeot.toString();
 				System.out.println("seqnum"+seqnum);
 				System.out.println("eot"+eot);
-				fchannel.write(bbuf);
+				stream.write(str, 6, 118);
 			}
 			//write.close();
 		}catch(Exception e){

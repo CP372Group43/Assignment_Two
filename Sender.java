@@ -1,12 +1,9 @@
 
-<<<<<<< HEAD
 import java.io.* ;
 import java.net.* ;
 import java.util.* ;
 
 
-=======
->>>>>>> 16c4a8dc3d715211c75a8e3b1b20320e56f3229a
 
 
 public class Sender implements Runnable{
