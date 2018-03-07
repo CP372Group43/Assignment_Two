@@ -9,8 +9,7 @@ import java.util.* ;
 public class Sender implements Runnable{
 	private int hostport,hostackport,timeout;
 	private String datafile,hostaddress;
-	DatagramSocket serversocket = null;
-	DatagramSocket acksocket = null;
+	DatagramSocket ackSocket = null;
 	public static void main(String[] args) {
 		int seqport,ackport,time;
 		String sendfile,hostaddr;
@@ -29,36 +28,38 @@ public class Sender implements Runnable{
 		this.datafile=sendfile;
 		this.timeout=time;
 		try {
-			this.serversocket = new DatagramSocket(3000);
+			this.ackSocket = new DatagramSocket(2222);
 		}catch(Exception e) {
 			e.printStackTrace(System.out);
 		}
 		this.run();
 	}
+	
+	public void sendUdp() throws Exception {
+		try {
+			new UdpSender(ackSocket, this.datafile,this.timeout);
+		} catch(Exception e) {
+			System.out.println("???");
+		    	e.printStackTrace(System.out);
+		    	this.ackSocket.close();
+			System.exit(1);
+		}
+	}
 
 	public void run() {
-    	System.out.print("Sender On \n");
-    	try {
-    		
-    		//System.out.println(this.acksocket.getInetAddress());
-    		//System.out.println(this.serversocket.getInetAddress());
-
-    	}catch(Exception e){
-    		e.printStackTrace(System.out);
-    	}
-    	while(true) {
-    	try {
-
-			new Thread(new UdpSender(this.serversocket,this.datafile,this.timeout,this.acksocket));
-		}catch(Exception e) {
-			System.out.println("???");
-			
-    		e.printStackTrace(System.out);
-    		this.serversocket.close();
-    		this.acksocket.close();
-			System.exit(1);
-    	}
-    	}
-
+	    	System.out.print("Sender On \n");
+    		byte[] buf =new byte[124];
+		try {			
+			while(true) {
+				DatagramPacket packet = new DatagramPacket(buf,buf.length);
+				packet.setLength(buf.length);
+				// wait for next transfer request from receiver
+				ackSocket.receive(packet);
+				// send receiver the data
+				new UdpSender(ackSocket, this.datafile,this.timeout);
+			}
+		}catch(Exception e){
+			e.printStackTrace(System.out);
+		}
 	}
 }

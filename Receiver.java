@@ -25,7 +25,7 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
     
     public static JTextField type_text_field;
     public static JTextField host_text_field;
-    public static JTextField ackport_text_field;
+    public static JTextField senderport_text_field;
     public static JTextField port_text_field;
     public static JTextField body_text_area;
     public static JTextField rec_packets_text_field;
@@ -33,15 +33,30 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
     public static JButton reliable_toggle_button;
     
     public static  Boolean is_reliable = false;
+<<<<<<< HEAD
     int total=0,inorder=0,prev;
+=======
+    
+    public static DatagramSocket seq = null;
+    
+
+>>>>>>> abfd2f4636bf6c367eb02fbb624b93bc1ddbab46
     StringReader read = null;
 	public Socket ReceiverSocket = null;
+	
 	public static void main(String[] args) {
 		Receiver Reciever = new Receiver();
         Reciever.setVisible(true);
-        
 	}
+	
 	public void run() {
+		int sPort = Integer.parseInt(senderport_text_field.getText());
+		String sAddress = host_text_field.getText();
+		int rPort = Integer.parseInt(port_text_field.getText());
+		String fileName = body_text_area.getText();
+		
+		System.out.println("Run called..");
+		
 		byte[] buf =new byte[124];
 		byte[] seqbyte = new byte[4];
 		byte[] isEot = new byte[1];
@@ -51,7 +66,6 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 		try {
 			File infile = new File("testme.txt");
 			BufferedWriter writef = new BufferedWriter(new FileWriter(infile));
-			DatagramSocket seq = new DatagramSocket(4000);
 			ByteArrayOutputStream input= new ByteArrayOutputStream(124);
 			DatagramPacket packet = new DatagramPacket(buf,buf.length);
 			FileOutputStream stream = new FileOutputStream("testme.txt");
@@ -91,6 +105,29 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 		
 	}
 	
+	public void transfer() {
+		int sPort = Integer.parseInt(senderport_text_field.getText());
+		String sAddress = host_text_field.getText();
+		int rPort = Integer.parseInt(port_text_field.getText());
+		String fileName = body_text_area.getText();
+		
+		try {
+			if(seq != null) {
+				seq.close();
+			}
+			seq = new DatagramSocket(rPort);
+			
+            DatagramPacket sendPacket = null;
+            String data = "";
+			byte[] message = "transfer".getBytes();
+			sendPacket = new DatagramPacket(message, message.length, InetAddress.getByName(sAddress), sPort);
+			seq.send(sendPacket);	
+			System.out.println("Sent start transmission message..");
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public Receiver() {
 		// setting up the JFrame
 		setTitle("Receiver");
@@ -101,32 +138,36 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
     		// init our wrapper panel
         	JPanel wrapper_panel = new JPanel();
     		
-        	// sender IP field
+        	// sender host field
         	JPanel sender_ip_panel = new JPanel();
-        	sender_ip_panel.add(new JLabel("Receiver IP: "));
+        	sender_ip_panel.add(new JLabel("Sender Host: "));
     		host_text_field = new JTextField("", 10);
     		host_text_field.setBackground(Color.WHITE);
+    		host_text_field.setText("localhost");
     		sender_ip_panel.add(host_text_field);
+
+    		// sender port field
+        	JPanel sender_port = new JPanel();
+        	sender_port.add(new JLabel("Sender Port: "));
+    		senderport_text_field = new JTextField("",10);
+    		senderport_text_field.setBackground(Color.WHITE);
+    		senderport_text_field.setText("2222");
+    		sender_port.add(senderport_text_field);
     		
-    		// receiver port field
+    		// receiver ack port field
         	JPanel receiver_port_panel = new JPanel();
-        	receiver_port_panel.add(new JLabel("Receiver Port: "));
+        	receiver_port_panel.add(new JLabel("Receiver Ack Port: "));
     		port_text_field = new JTextField("", 10);
     		port_text_field.setBackground(Color.WHITE);
+    		port_text_field.setText("3333");
     		receiver_port_panel.add(port_text_field);
-    		
-    		// sender ack port field
-        	JPanel sender_ack_port = new JPanel();
-        	sender_ack_port.add(new JLabel("Sender Ack Port: "));
-    		ackport_text_field = new JTextField("",10);
-    		ackport_text_field.setBackground(Color.WHITE);
-    		sender_ack_port.add(ackport_text_field);
 
     		// file name
         	JPanel file_panel = new JPanel();
         	file_panel.add(new JLabel("File Name: "));
     		body_text_area = new JTextField("", 10);
     		body_text_area.setBackground(Color.WHITE);
+    		body_text_area.setText("test.txt");
     		file_panel.add(body_text_area);
     		
     		// received packets 
@@ -165,7 +206,7 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
     		
     		// laying out the wrapper pannel
     		wrapper_panel.add(sender_ip_panel);
-    		wrapper_panel.add(sender_ack_port);
+    		wrapper_panel.add(sender_port);
     		wrapper_panel.add(receiver_port_panel);
     		wrapper_panel.add(file_panel);
         wrapper_panel.add(actions_panel);
@@ -174,7 +215,6 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
         wrapper_panel.add(response_panel);
     		
     		add(wrapper_panel);
-    		this.run();
 
 	}
 	
@@ -186,7 +226,9 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 			} else {
 				reliable_toggle_button.setText("Reliable");
 			}
-		}		
+		} else if("transfer".equals(e.getActionCommand())) {
+			transfer();
+		}
 	}
 	
 }

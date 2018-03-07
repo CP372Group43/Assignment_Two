@@ -15,7 +15,7 @@ public class UdpSender implements Runnable{
 	DatagramSocket ackport = null;
 	byte[] ackbuf = new byte[4];
 	byte[] buf = new byte[118];
-	public UdpSender(DatagramSocket s,String file, int timeout,DatagramSocket ackport) throws Exception{
+	public UdpSender(DatagramSocket s,String file, int timeout) throws Exception{
 		this.file=file;
 		this.timeout=timeout;
 		this.ackport=ackport;
