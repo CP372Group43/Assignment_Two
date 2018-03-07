@@ -3,7 +3,7 @@ import java.io.* ;
 import java.net.* ;
 import java.util.* ;
 
-public class UdpSender implements Runnable{
+public class UdpSender {
 
 	String file;
 	int timeout;
@@ -14,7 +14,10 @@ public class UdpSender implements Runnable{
 	DatagramSocket ackport = null;
 	byte[] ackbuf = new byte[4];
 	byte[] buf = new byte[124];
-	public UdpSender(DatagramSocket s,String file, int timeout,DatagramSocket ackport) throws Exception{
+	boolean isRun = true;
+	public UdpSender(DatagramSocket s,String file, int timeout) throws Exception{
+		System.out.println("new udp sender created..");
+
 		this.file=file;
 		this.timeout=timeout;
 		this.ackport=ackport;
@@ -22,20 +25,11 @@ public class UdpSender implements Runnable{
 		this.seqnum=new Integer(0);
 		this.isEot=new Integer(0);
 		try {
-		this.run();
-		}catch(Exception e) {
-			throw new Exception();
-		}
-	}
-	public void run(){
-		
-		
-		try {
 			FileInputStream reader = new FileInputStream("test.txt");
-			SendPacket(reader);
+			this.SendPacket(reader);
 			reader.close();
 		}catch(Exception e) {
-    		e.printStackTrace(System.out);
+			e.printStackTrace(System.out);
 		}
 	}
 	public void SendPacket(FileInputStream reader) throws Exception {
@@ -44,14 +38,14 @@ public class UdpSender implements Runnable{
 		byte[] eotoffset;
 		byte[] offdata = new byte[124];
 		int offsetlen;
-		boolean isRun = true;
-		System.out.println("insnd");
+		isRun = true;
 		while(isRun) {
 			bytestr=reader.read(this.buf);
 			String input;
 			//this.buf=input.getBytes();
 			int lenseq = this.seqnum.toString().getBytes().length;
 			System.out.println(this.seqnum.toString().getBytes());
+			System.out.print("bytestr = " + bytestr + "   available = " + reader.available());
 			if(bytestr!=-1 && reader.available()>0) {
 				try {				
 					ByteArrayOutputStream read = new ByteArrayOutputStream(119);
@@ -61,7 +55,8 @@ public class UdpSender implements Runnable{
 					System.out.println(input);
 					System.out.println(input.getBytes());
 					offdata=input.getBytes();
-					this.packet = new DatagramPacket(offdata,offdata.length, InetAddress.getByName("localhost"),4000);
+					System.out.print("-------HEREHEREHEREHEREHERE------");
+					this.packet = new DatagramPacket(offdata,offdata.length, InetAddress.getByName("localhost"), 2222);
 					this.seqport.send(this.packet);
 					this.seqnum+=1;
 					//this.timeout();
@@ -74,19 +69,6 @@ public class UdpSender implements Runnable{
 				System.out.println("endoffile");
 				isRun=false;
 				this.isEot=1;
-				//ByteArrayOutputStream read = new ByteArrayOutputStream(124);
-				//read.write(this.buf);
-				//input= this.isEot.toString();
-				//System.out.println(input);
-				//System.out.println(input.getBytes());
-				try {
-					//this.packet = new DatagramPacket(offdata,offdata.length,InetAddress.getByName("localhost"),0123);
-					//this.seqport.send(this.packet);
-//				this.timeout();
-				}catch(Exception e) {
-					throw new Exception();
-				}
-				
 			}
 			
 		}
