@@ -1,17 +1,30 @@
 
 import java.io.* ;
 import java.net.* ;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.* ;
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 68c3f8dc5e3258d90d502d31b2b15a738c0938d6
 
 public class Sender implements Runnable{
 	private int hostport,hostackport,timeout;
 	private String datafile,hostaddress;
-	DatagramSocket serversocket = null;
-	DatagramSocket acksocket = null;
+	private static DatagramSocket ackSocket = null;
+	
+
+	
 	public static void main(String[] args) {
+		try {
+			ackSocket = new DatagramSocket(3333);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
 		int seqport,ackport,time;
 		String sendfile,hostaddr;
 		hostaddr= args[0];
@@ -28,37 +41,34 @@ public class Sender implements Runnable{
 		this.hostackport=ackport;
 		this.datafile=sendfile;
 		this.timeout=time;
-		try {
-			this.serversocket = new DatagramSocket(3000);
-		}catch(Exception e) {
-			e.printStackTrace(System.out);
-		}
 		this.run();
+	}
+	
+	public void sendUdp() throws Exception {
+		try {
+			new UdpSender(ackSocket, this.datafile,this.timeout);
+		} catch(Exception e) {
+			System.out.println("???");
+		    	e.printStackTrace(System.out);
+		    	this.ackSocket.close();
+			System.exit(1);
+		}
 	}
 
 	public void run() {
-    	System.out.print("Sender On \n");
-    	try {
-    		
-    		//System.out.println(this.acksocket.getInetAddress());
-    		//System.out.println(this.serversocket.getInetAddress());
-
-    	}catch(Exception e){
-    		e.printStackTrace(System.out);
-    	}
-    	while(true) {
-    	try {
-
-			new Thread(new UdpSender(this.serversocket,this.datafile,this.timeout,this.acksocket));
-		}catch(Exception e) {
-			System.out.println("???");
-			
-    		e.printStackTrace(System.out);
-    		this.serversocket.close();
-    		this.acksocket.close();
-			System.exit(1);
-    	}
-    	}
-
+	    	System.out.print("Sender On \n");
+    		byte[] buf =new byte[124];
+		try {			
+			while(true) {
+				DatagramPacket packet = new DatagramPacket(buf,buf.length);
+				
+				packet.setLength(buf.length);
+				ackSocket.receive(packet);
+				String message = new String(packet.getData(), 0, packet.getLength());
+				System.out.println("str: "+message);
+			}
+		}catch(Exception e){
+			e.printStackTrace(System.out);
+		}
 	}
 }
