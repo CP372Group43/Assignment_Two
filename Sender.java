@@ -57,11 +57,11 @@ public class Sender implements Runnable{
 		try {			
 			while(true) {
 				DatagramPacket packet = new DatagramPacket(buf,buf.length);
-				
 				packet.setLength(buf.length);
+				// wait for next transfer request from receiver
 				ackSocket.receive(packet);
-				String message = new String(packet.getData(), 0, packet.getLength());
-				System.out.println("str: "+message);
+				// send receiver the data
+				new UdpSender(ackSocket, this.datafile,this.timeout);
 			}
 		}catch(Exception e){
 			e.printStackTrace(System.out);

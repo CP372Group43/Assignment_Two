@@ -25,7 +25,7 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
     
     public static JTextField type_text_field;
     public static JTextField host_text_field;
-    public static JTextField ackport_text_field;
+    public static JTextField senderport_text_field;
     public static JTextField port_text_field;
     public static JTextField body_text_area;
     public static JTextField rec_packets_text_field;
@@ -41,28 +41,12 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 	public Socket ReceiverSocket = null;
 	
 	public static void main(String[] args) {
-		try {
-			seq = new DatagramSocket(2222);
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-		
 		Receiver Reciever = new Receiver();
         Reciever.setVisible(true);
 	}
 	
 	public void run() {
 		System.out.println("Run called..");
-		
-//		try {
-//			DatagramPacket sendPacket = null;
-//			byte[] message = "Hello".getBytes();
-//			sendPacket = new DatagramPacket(message, message.length, InetAddress.getByName("localhost"), 3333);
-//			seq.send(sendPacket);		
-//		} catch(Exception e) {
-//			e.printStackTrace();
-//		}
-//	
 		
 		byte[] buf =new byte[124];
 		byte[] seqbyte = new byte[4];
@@ -103,11 +87,25 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 	}
 	
 	public void transfer() {
+		int sPort = Integer.parseInt(senderport_text_field.getText());
+		String sAddress = host_text_field.getText();
+		int rPort = Integer.parseInt(port_text_field.getText());
+		String fileName = body_text_area.getText();
+		
 		try {
+			try {
+				if(seq != null) {
+					seq.close();
+				}
+				seq = new DatagramSocket(rPort);
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+			
             DatagramPacket sendPacket = null;
             String data = "";
 			byte[] message = "transfer".getBytes();
-			sendPacket = new DatagramPacket(message, message.length, InetAddress.getByName("localhost"), 3333);
+			sendPacket = new DatagramPacket(message, message.length, InetAddress.getByName(sAddress), sPort);
 			seq.send(sendPacket);	
 			System.out.println("Sent start transmission message..");
 		} catch(Exception e) {
@@ -125,7 +123,7 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
     		// init our wrapper panel
         	JPanel wrapper_panel = new JPanel();
     		
-        	// sender IP field
+        	// sender host field
         	JPanel sender_ip_panel = new JPanel();
         	sender_ip_panel.add(new JLabel("Sender Host: "));
     		host_text_field = new JTextField("", 10);
@@ -133,17 +131,17 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
     		host_text_field.setText("localhost");
     		sender_ip_panel.add(host_text_field);
 
-    		// sender ack port field
-        	JPanel sender_ack_port = new JPanel();
-        	sender_ack_port.add(new JLabel("Sender Ack Port: "));
-    		ackport_text_field = new JTextField("",10);
-    		ackport_text_field.setBackground(Color.WHITE);
-    		ackport_text_field.setText("3333");
-    		sender_ack_port.add(ackport_text_field);
+    		// sender port field
+        	JPanel sender_port = new JPanel();
+        	sender_port.add(new JLabel("Sender Port: "));
+    		senderport_text_field = new JTextField("",10);
+    		senderport_text_field.setBackground(Color.WHITE);
+    		senderport_text_field.setText("3333");
+    		sender_port.add(senderport_text_field);
     		
-    		// receiver port field
+    		// receiver ack port field
         	JPanel receiver_port_panel = new JPanel();
-        	receiver_port_panel.add(new JLabel("Receiver Port: "));
+        	receiver_port_panel.add(new JLabel("Receiver Ack Port: "));
     		port_text_field = new JTextField("", 10);
     		port_text_field.setBackground(Color.WHITE);
     		port_text_field.setText("2222");
@@ -193,7 +191,7 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
     		
     		// laying out the wrapper pannel
     		wrapper_panel.add(sender_ip_panel);
-    		wrapper_panel.add(sender_ack_port);
+    		wrapper_panel.add(sender_port);
     		wrapper_panel.add(receiver_port_panel);
     		wrapper_panel.add(file_panel);
         wrapper_panel.add(actions_panel);
