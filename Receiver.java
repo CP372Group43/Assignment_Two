@@ -1,3 +1,4 @@
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -14,8 +15,8 @@ import java.awt.FlowLayout;
 
 import java.io.*;
 import java.net.*;
-
-
+import java.nio.*;
+import java.nio.channels.FileChannel;
 @SuppressWarnings("serial")
 public class Receiver extends JFrame implements ActionListener,Runnable {
 	
@@ -38,20 +39,25 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 	public static void main(String[] args) {
 		Receiver Reciever = new Receiver();
         Reciever.setVisible(true);
+        
 	}
 	public void run() {
 		byte[] buf =new byte[124];
 		byte[] seqbyte = new byte[4];
 		byte[] isEot = new byte[2];
 		try {
+			File infile = new File("testme.txt");
 			DatagramSocket seq = new DatagramSocket(0123);
-			BufferedWriter writef = new BufferedWriter(new FileWriter("testme.txt"));
+			BufferedWriter writef = new BufferedWriter(new FileWriter(infile));
 			ByteArrayOutputStream input= new ByteArrayOutputStream(124);
 			DatagramPacket packet = new DatagramPacket(buf,buf.length);
+			FileChannel fchannel =  new FileOutputStream(infile,true).getChannel();
+			ByteBuffer bbuf = ByteBuffer.allocate(124);
 			while(true) {
 				packet.setLength(buf.length);
 				seq.receive(packet);
 				byte[] str = packet.getData();
+				bbuf.wrap(str);
 				System.out.println("str"+str.length);
 				seqbyte[0]= str[3];
 				seqbyte[1]= str[2];
@@ -66,8 +72,7 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 				String eot = readeot.toString();
 				System.out.println("seqnum"+seqnum);
 				System.out.println("eot"+eot);
-				String newstr = new String(str, 0, str.length);
-				writef.write(newstr);
+				fchannel.write(bbuf);
 			}
 			//write.close();
 		}catch(Exception e){
@@ -77,7 +82,6 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 	}
 	
 	public Receiver() {
-		this.run();
 		// setting up the JFrame
 		setTitle("Receiver");
 		setSize(WIDTH, HEIGHT);
@@ -160,7 +164,8 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
         wrapper_panel.add(response_panel);
     		
     		add(wrapper_panel);
-    		
+    		this.run();
+
 	}
 	
 	public void actionPerformed(ActionEvent e) {

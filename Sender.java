@@ -1,14 +1,8 @@
+
 import java.io.* ;
 import java.net.* ;
 import java.util.* ;
 
-public class Sender implements Runnable{
-	private int hostport,hostackport,timeout;
-	private String datafile,hostaddress;
-	DatagramSocket serversocket = null;
-import java.io.* ;
-import java.net.* ;
-import java.util.* ;
 
 
 
