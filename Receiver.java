@@ -33,7 +33,7 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
     public static JButton reliable_toggle_button;
     
     public static  Boolean is_reliable = false;
-
+    int total=0,inorder=0,prev;
     StringReader read = null;
 	public Socket ReceiverSocket = null;
 	public static void main(String[] args) {
@@ -44,7 +44,8 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 	public void run() {
 		byte[] buf =new byte[124];
 		byte[] seqbyte = new byte[4];
-		byte[] isEot = new byte[2];
+		byte[] isEot = new byte[1];
+		
 		String prev,current;
 		prev="0";
 		try {
@@ -65,7 +66,7 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 				seqbyte[3]= str[3];
 				isEot[0]=str[4];
 				ByteArrayOutputStream readseq = new ByteArrayOutputStream(4);
-				ByteArrayOutputStream readeot = new ByteArrayOutputStream(2);
+				ByteArrayOutputStream readeot = new ByteArrayOutputStream(1);
 				readseq.write(seqbyte);
 				readeot.write(isEot);
 				String seqnum=readseq.toString();
@@ -73,7 +74,15 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 				String eot = readeot.toString();
 				System.out.println("seqnum"+seqnum);
 				System.out.println("eot"+eot);
-				stream.write(str, 6, 118);
+				if(!eot.equals("0") && this.total!=0) {
+					System.exit(1);
+				}else if(total!=0){
+				}else {
+					this.prev=1;
+					stream.write(str, 6, 118);
+
+				}
+				total++;
 			}
 			//write.close();
 		}catch(Exception e){

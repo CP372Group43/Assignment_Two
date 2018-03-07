@@ -20,7 +20,7 @@ public class UdpSender implements Runnable{
 		this.timeout=timeout;
 		this.ackport=ackport;
 		this.seqport=s;
-		this.seqnum="0000";
+		this.seqnum="0001";
 		this.isEot="0";
 		try {
 		this.run();
