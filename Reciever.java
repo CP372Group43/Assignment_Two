@@ -19,14 +19,14 @@ import java.net.*;
 @SuppressWarnings("serial")
 public class Reciever extends JFrame implements ActionListener {
 	
-	public static final int WIDTH = 400;
-    public static final int HEIGHT = 500;
+	public static final int WIDTH = 500;
+    public static final int HEIGHT = 350;
     
     public static JTextField type_text_field;
     public static JTextField host_text_field;
     public static JTextField ackport_text_field;
     public static JTextField port_text_field;
-    public static JTextArea body_text_area;
+    public static JTextField body_text_area;
     public static JTextArea response_text_area;
     public static JButton connect_button;
 
@@ -45,7 +45,8 @@ public class Reciever extends JFrame implements ActionListener {
     		setResizable(false);
 
     		// init all our panels
-    		JPanel server_panel = new JPanel(new FlowLayout());
+    		JPanel server_panel = new JPanel();
+    		JPanel port_panel = new JPanel();
         	JPanel message_panel = new JPanel();
         	JPanel response_panel = new JPanel();
         	JPanel wrapper_panel = new JPanel();
@@ -55,18 +56,17 @@ public class Reciever extends JFrame implements ActionListener {
     		host_text_field = new JTextField("", 10);
     		host_text_field.setBackground(Color.WHITE);
     		
+    		
     		// port field
     		port_text_field = new JTextField("", 10);
     		port_text_field.setBackground(Color.WHITE);
     		
     		ackport_text_field = new JTextField("",10);
     		ackport_text_field.setBackground(Color.WHITE);
-    		// body text area
-    		body_text_area = new JTextArea(10, 20);
+    		
+    		// body field
+    		body_text_area = new JTextField("", 10);
     		body_text_area.setBackground(Color.WHITE);
-    		body_text_area.setLineWrap(true);
-    		body_text_area.setWrapStyleWord(true);
-    		JScrollPane body_scroll_panel = new JScrollPane(body_text_area);
     		
     		// response text area
     		response_text_area = new JTextArea(10, 20);
@@ -79,31 +79,26 @@ public class Reciever extends JFrame implements ActionListener {
     		// adding labels and inputs to panels
     		server_panel.add(new JLabel("Sender IP: "));
     		server_panel.add(host_text_field);
-    		server_panel.add(new JLabel("Sender Port: "));
-    		server_panel.add(port_text_field);
-    		server_panel.add(new JLabel("Sender ACK Port: "));
-    		server_panel.add(ackport_text_field);
-    		message_panel.add(new JLabel("Request Body: "));
-    		message_panel.add(body_scroll_panel);
+    		port_panel.add(new JLabel("Reciever Port: "));
+    		port_panel.add(port_text_field);
+    		port_panel.add(new JLabel("Sender ACK Port: "));
+    		port_panel.add(ackport_text_field);
+    		message_panel.add(new JLabel("File Name: "));
+    		message_panel.add(body_text_area);
     		response_panel.add(new JLabel("Response: "));
     		response_panel.add(response_scroll_panel);
     		wrapper_panel.add(server_panel, BorderLayout.NORTH);
+    		wrapper_panel.add(port_panel, BorderLayout.NORTH);
     		wrapper_panel.add(message_panel, BorderLayout.CENTER);
     		
     		// add Send Button
         JButton send_button = new JButton("Send"); 
         send_button.setActionCommand("send");
         send_button.addActionListener(this);
-        actions_panel.add(send_button); 
+        actions_panel.add(send_button, BorderLayout.WEST); 
         
-        // add Connect/Disconnect Button
-        connect_button = new JButton("Connect"); 
-        connect_button.setActionCommand("connect");
-        connect_button.addActionListener(this);
-        actions_panel.add(connect_button);
-        
-        wrapper_panel.add(actions_panel, BorderLayout.CENTER);
         wrapper_panel.add(response_panel, BorderLayout.CENTER);
+        wrapper_panel.add(actions_panel, BorderLayout.CENTER);
     		
     		add(wrapper_panel);
     		
