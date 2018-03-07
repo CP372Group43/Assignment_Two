@@ -20,14 +20,14 @@ import java.net.*;
 public class Receiver extends JFrame implements ActionListener {
 	
 	public static final int WIDTH = 300;
-    public static final int HEIGHT = 455;
+    public static final int HEIGHT = 475;
     
     public static JTextField type_text_field;
     public static JTextField host_text_field;
     public static JTextField ackport_text_field;
     public static JTextField port_text_field;
     public static JTextField body_text_area;
-    public static JTextField timeout_text_field;
+    public static JTextField rec_packets_text_field;
     public static JTextArea response_text_area;
     public static JButton connect_button;
 
@@ -48,12 +48,12 @@ public class Receiver extends JFrame implements ActionListener {
     		// init our wrapper panel
         	JPanel wrapper_panel = new JPanel();
     		
-        	// receiver IP field
-        	JPanel receiver_ip_panel = new JPanel();
-        	receiver_ip_panel.add(new JLabel("Receiver IP: "));
+        	// sender IP field
+        	JPanel sender_ip_panel = new JPanel();
+        	sender_ip_panel.add(new JLabel("Receiver IP: "));
     		host_text_field = new JTextField("", 10);
     		host_text_field.setBackground(Color.WHITE);
-    		receiver_ip_panel.add(host_text_field);
+    		sender_ip_panel.add(host_text_field);
     		
     		// receiver port field
         	JPanel receiver_port_panel = new JPanel();
@@ -76,12 +76,12 @@ public class Receiver extends JFrame implements ActionListener {
     		body_text_area.setBackground(Color.WHITE);
     		file_panel.add(body_text_area);
     		
-    		// timeout 
-        	JPanel timeout_panel = new JPanel();
-        	timeout_panel.add(new JLabel(" Timeout: "));
-    		timeout_text_field = new JTextField("",10);
-    		timeout_text_field.setBackground(Color.WHITE);
-    		timeout_panel.add(timeout_text_field);
+    		// received packets 
+        	JPanel rec_packets_panel = new JPanel();
+    		rec_packets_text_field = new JTextField("",10);
+    		rec_packets_text_field.setBackground(Color.WHITE);
+    		rec_packets_text_field.setEditable(false);
+    		rec_packets_panel.add(rec_packets_text_field);
 
     		// response
         	JPanel response_panel = new JPanel();
@@ -94,20 +94,30 @@ public class Receiver extends JFrame implements ActionListener {
     		response_panel.add(new JLabel("Response: "));
     		response_panel.add(response_scroll_panel);
     		
-    		// add Send Button
+    		// add actions panel
         	JPanel actions_panel = new JPanel();
-        JButton send_button = new JButton("Send"); 
-        send_button.setActionCommand("send");
-        send_button.addActionListener(this);
-        actions_panel.add(send_button); 
+    		
+    		// add transfer Button
+        JButton transfer_button = new JButton("Transfer"); 
+        transfer_button.setActionCommand("transfer");
+        transfer_button.addActionListener(this);
+        
+        // add reliable/unreliable Button
+        JButton reliable_toggle_button = new JButton("Reliable"); 
+        reliable_toggle_button.setActionCommand("reliable_toggle");
+        reliable_toggle_button.addActionListener(this);
+        
+        actions_panel.add(transfer_button); 
+        actions_panel.add(reliable_toggle_button); 
     		
     		// laying out the wrapper pannel
-    		wrapper_panel.add(receiver_ip_panel);
-    		wrapper_panel.add(receiver_port_panel);
+    		wrapper_panel.add(sender_ip_panel);
     		wrapper_panel.add(sender_ack_port);
+    		wrapper_panel.add(receiver_port_panel);
     		wrapper_panel.add(file_panel);
-    		wrapper_panel.add(timeout_panel);
         wrapper_panel.add(actions_panel);
+        wrapper_panel.add(new JLabel("Current # of received in-order packets: "));
+		wrapper_panel.add(rec_packets_panel);
         wrapper_panel.add(response_panel);
     		
     		add(wrapper_panel);
