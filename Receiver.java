@@ -44,7 +44,7 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 		byte[] seqbyte = new byte[4];
 		byte[] isEot = new byte[2];
 		try {
-			DatagramSocket seq = new DatagramSocket(0123);
+			DatagramSocket seq = new DatagramSocket(4000);
 			BufferedWriter writef = new BufferedWriter(new FileWriter("testme.txt"));
 			ByteArrayOutputStream input= new ByteArrayOutputStream(124);
 			DatagramPacket packet = new DatagramPacket(buf,buf.length);

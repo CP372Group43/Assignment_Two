@@ -2,15 +2,6 @@ import java.io.* ;
 import java.net.* ;
 import java.util.* ;
 
-public class Sender implements Runnable{
-	private int hostport,hostackport,timeout;
-	private String datafile,hostaddress;
-	DatagramSocket serversocket = null;
-import java.io.* ;
-import java.net.* ;
-import java.util.* ;
-
-
 
 public class Sender implements Runnable{
 	private int hostport,hostackport,timeout;
@@ -25,16 +16,17 @@ public class Sender implements Runnable{
 		ackport=Integer.parseInt(args[2]);
 		sendfile=args[3];
 		time=Integer.parseInt(args[2]);
-		new Sender(hostaddr,seqport,ackport,sendfile,time);	}
+		new Sender(hostaddr,seqport,ackport,sendfile,time);	
+	}
+	
 	public Sender(String hostaddr,int seqport,int ackport, String sendfile, int time) {
-		
 		this.hostaddress=hostaddr;
 		this.hostport=seqport;
 		this.hostackport=ackport;
 		this.datafile=sendfile;
 		this.timeout=time;
 		try {
-		this.serversocket = new DatagramSocket(9001);
+			this.serversocket = new DatagramSocket(3000);
 		}catch(Exception e) {
 			e.printStackTrace(System.out);
 		}

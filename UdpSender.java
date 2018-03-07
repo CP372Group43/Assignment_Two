@@ -52,23 +52,23 @@ public class UdpSender implements Runnable{
 			int lenseq = this.seqnum.toString().getBytes().length;
 			System.out.println(this.seqnum.toString().getBytes());
 			if(bytestr!=-1 && reader.available()>0) {
-			try {				
-				ByteArrayOutputStream read = new ByteArrayOutputStream(119);
-				read.write(this.buf);
-				System.out.println("eotlen"+ this.isEot.toString());
-				input=  this.seqnum.toString() +this.isEot.toString()+read.toString();
-				System.out.println(input);
-				System.out.println(input.getBytes());
-				offdata=input.getBytes();
-				this.packet = new DatagramPacket(offdata,offdata.length,InetAddress.getByName("localhost"),0123);
-				this.seqport.send(this.packet);
-				this.seqnum+=1;
-				//this.timeout();
-			}catch(Exception e) {
-        		e.printStackTrace(System.out);
-
-				isRun=false;
-			}
+				try {				
+					ByteArrayOutputStream read = new ByteArrayOutputStream(119);
+					read.write(this.buf);
+					System.out.println("eotlen"+ this.isEot.toString());
+					input=  this.seqnum.toString() +this.isEot.toString()+read.toString();
+					System.out.println(input);
+					System.out.println(input.getBytes());
+					offdata=input.getBytes();
+					this.packet = new DatagramPacket(offdata,offdata.length, InetAddress.getByName("localhost"),4000);
+					this.seqport.send(this.packet);
+					this.seqnum+=1;
+					//this.timeout();
+				}catch(Exception e) {
+	        			e.printStackTrace(System.out);
+	
+					isRun=false;
+				}
 			}else {
 				System.out.println("endoffile");
 				isRun=false;
@@ -97,15 +97,15 @@ public class UdpSender implements Runnable{
 			if(System.currentTimeMillis()>=(starttime+this.timeout)) {
 				isRunning= false;
 			}else {
-		try {
-			this.ack = new DatagramPacket(ackbuf,ackbuf.length);
-			this.ackport.receive(this.ack);
-		}catch(Exception e) {
-    		e.printStackTrace(System.out);
-
-			throw e;
-		}
+				try {
+					this.ack = new DatagramPacket(ackbuf,ackbuf.length);
+					this.ackport.receive(this.ack);
+				}catch(Exception e) {
+			    		e.printStackTrace(System.out);
+			
+					throw e;
+				}
 			}
-	}
+		}
 	}
 }
