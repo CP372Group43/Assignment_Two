@@ -17,7 +17,7 @@ import java.net.*;
 
 
 @SuppressWarnings("serial")
-public class Reciever extends JFrame implements ActionListener {
+public class Receiver extends JFrame implements ActionListener {
 	
 	public static final int WIDTH = 500;
     public static final int HEIGHT = 350;
@@ -31,15 +31,15 @@ public class Reciever extends JFrame implements ActionListener {
     public static JButton connect_button;
 
     StringReader read = null;
-	public Socket RecieverSocket = null;
+	public Socket ReceiverSocket = null;
 	public static void main(String[] args) {
-		Reciever Reciever = new Reciever();
+		Receiver Reciever = new Receiver();
         Reciever.setVisible(true);
 	}
 	
-	public Reciever() {
+	public Receiver() {
 		// setting up the JFrame
-		setTitle("Reciever");
+		setTitle("Receiver");
 		setSize(WIDTH, HEIGHT);
     		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     		setResizable(false);
@@ -52,23 +52,23 @@ public class Reciever extends JFrame implements ActionListener {
         	JPanel wrapper_panel = new JPanel();
         	JPanel actions_panel = new JPanel();
     		
-        	// host field
+        	// receiver IP field
     		host_text_field = new JTextField("", 10);
     		host_text_field.setBackground(Color.WHITE);
     		
-    		
-    		// port field
+    		// receiver port field
     		port_text_field = new JTextField("", 10);
     		port_text_field.setBackground(Color.WHITE);
     		
+    		// sender ack port field
     		ackport_text_field = new JTextField("",10);
     		ackport_text_field.setBackground(Color.WHITE);
     		
-    		// body field
+    		// file name
     		body_text_area = new JTextField("", 10);
     		body_text_area.setBackground(Color.WHITE);
     		
-    		// response text area
+    		// response
     		response_text_area = new JTextArea(10, 20);
     		response_text_area.setEditable(false);
     		response_text_area.setBackground(Color.WHITE);
@@ -79,7 +79,7 @@ public class Reciever extends JFrame implements ActionListener {
     		// adding labels and inputs to panels
     		server_panel.add(new JLabel("Sender IP: "));
     		server_panel.add(host_text_field);
-    		port_panel.add(new JLabel("Reciever Port: "));
+    		port_panel.add(new JLabel("Receiver Port: "));
     		port_panel.add(port_text_field);
     		port_panel.add(new JLabel("Sender ACK Port: "));
     		port_panel.add(ackport_text_field);
