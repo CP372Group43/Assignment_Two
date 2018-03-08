@@ -39,7 +39,6 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
     
     public static DatagramSocket seq = null;
     public static DatagramSocket ack=null;
-    String
 
     StringReader read = null;
 	public Socket ReceiverSocket = null;
