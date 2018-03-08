@@ -28,6 +28,9 @@ public class UdpSender implements Runnable{
 		this.file=file;
 		this.timeout=timeout;
 		this.ackport=ackport;
+<<<<<<< HEAD
+>>>>>>> parent of 496132e... acks
+=======
 >>>>>>> parent of 496132e... acks
 		this.seqport=s;
 		this.seqnum="0000";
@@ -83,6 +86,7 @@ public class UdpSender implements Runnable{
 					offdata=read.toByteArray();
 					this.seqport.send(this.packet);
 <<<<<<< HEAD
+<<<<<<< HEAD
 					
 					
 					int acktype=this.timeout(offdata);
@@ -90,6 +94,8 @@ public class UdpSender implements Runnable{
 						System.out.println("exit");
 						System.exit(1);
 					}
+=======
+>>>>>>> parent of 496132e... acks
 =======
 >>>>>>> parent of 496132e... acks
 					Integer nextseq= Integer.parseInt(this.seqnum)+1;
@@ -142,6 +148,7 @@ public class UdpSender implements Runnable{
 		boolean isRunning = true;
 		while(isRunning) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 			if(System.currentTimeMillis()>(starttime+this.time)) {
 
 				isRunning= false;
@@ -154,6 +161,14 @@ public class UdpSender implements Runnable{
 					this.ackport.receive(this.ack);
 					ackd=0;
 					isRunning=false;
+=======
+			if(System.currentTimeMillis()>=(starttime+this.timeout)) {
+				isRunning= false;
+			}else {
+				try {
+					this.ack = new DatagramPacket(ackbuf,ackbuf.length);
+					this.ackport.receive(this.ack);
+>>>>>>> parent of 496132e... acks
 =======
 			if(System.currentTimeMillis()>=(starttime+this.timeout)) {
 				isRunning= false;

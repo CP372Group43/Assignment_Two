@@ -12,8 +12,11 @@ public class Sender implements Runnable{
 	private String datafile,hostaddress;
 	DatagramSocket ackSocket = null;
 <<<<<<< HEAD
+<<<<<<< HEAD
 	DatagramSocket serversocket=null;
 	long timeout;
+=======
+>>>>>>> parent of 496132e... acks
 =======
 >>>>>>> parent of 496132e... acks
 	public static void main(String[] args) {
@@ -35,8 +38,12 @@ public class Sender implements Runnable{
 		this.timeout=time;
 		try {
 <<<<<<< HEAD
+<<<<<<< HEAD
 			this.serversocket = new DatagramSocket();
 			this.ackSocket=new DatagramSocket(this.hostackport);
+=======
+			this.ackSocket = new DatagramSocket(2222);
+>>>>>>> parent of 496132e... acks
 =======
 			this.ackSocket = new DatagramSocket(2222);
 >>>>>>> parent of 496132e... acks
@@ -53,7 +60,11 @@ public class Sender implements Runnable{
 				// wait for next transfer request from receiver
 				// send receiver the data
 <<<<<<< HEAD
+<<<<<<< HEAD
 				new UdpSender(this.serversocket, this.datafile,this.timeout,this.ackSocket,this.hostport,this.hostaddress);
+=======
+				new UdpSender(this.ackSocket, this.datafile,this.timeout);
+>>>>>>> parent of 496132e... acks
 =======
 				new UdpSender(this.ackSocket, this.datafile,this.timeout);
 >>>>>>> parent of 496132e... acks

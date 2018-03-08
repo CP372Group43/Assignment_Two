@@ -1,5 +1,8 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of 496132e... acks
 =======
 >>>>>>> parent of 496132e... acks
 
@@ -49,6 +52,9 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 =======
     public static DatagramSocket seq = null;
     
+<<<<<<< HEAD
+>>>>>>> parent of 496132e... acks
+=======
 >>>>>>> parent of 496132e... acks
 
     StringReader read = null;
@@ -77,6 +83,9 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 			DatagramPacket ack = new DatagramPacket(ackbuf,ackbuf.length,InetAddress.getByName(this.host),new Integer(this.sendport));
 =======
 			FileOutputStream stream = new FileOutputStream("testme.txt");
+<<<<<<< HEAD
+>>>>>>> parent of 496132e... acks
+=======
 >>>>>>> parent of 496132e... acks
 			while(true) {
 				if(this.is_reliable==true) {
@@ -140,6 +149,7 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 
 				}
 <<<<<<< HEAD
+<<<<<<< HEAD
 				ackbuf=readseq.toByteArray();
 				this.ack.send(ack);
 				this.total++;
@@ -157,6 +167,8 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 				this.inorder++;
 				}
 =======
+=======
+>>>>>>> parent of 496132e... acks
 				total++;
 >>>>>>> parent of 496132e... acks
 			}
