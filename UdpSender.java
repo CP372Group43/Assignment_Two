@@ -1,4 +1,3 @@
-package Assignment_Two;
 
 
 import java.io.* ;
@@ -9,7 +8,7 @@ import java.util.* ;
 public class UdpSender implements Runnable{
 
 	String file;
-	int timeout;
+	long time;
 	String seqnum,isEot;
 	DatagramPacket packet = null;
 	DatagramPacket ack=null;
@@ -17,9 +16,9 @@ public class UdpSender implements Runnable{
 	DatagramSocket ackport = null;
 	byte[] ackbuf = new byte[4];
 	byte[] buf = new byte[118];
-	public UdpSender(DatagramSocket s,String file, int timeout,DatagramSocket ack) throws Exception{
+	public UdpSender(DatagramSocket s,String file, long timeout,DatagramSocket ack) throws Exception{
 		this.file=file;
-		this.timeout=timeout;
+		this.time=timeout;
 		this.ackport=ack;
 		this.seqport=s;
 		this.seqnum="0000";
@@ -139,25 +138,24 @@ public class UdpSender implements Runnable{
 		int ackd = 0;
 		boolean isRunning = true;
 		while(isRunning) {
-			
-			if(System.currentTimeMillis()>=(starttime+this.timeout)) {
+			System.out.println("loopin");
+			if(System.currentTimeMillis()>(starttime+this.time)) {
+				System.out.println("bad");
+
 				isRunning= false;
-				ackd=1;
+				ackd=0;
 				System.out.println("timeout");
 			}else {
 				try {
+					System.out.println("not bad");
+
 					this.ack = new DatagramPacket(this.ackbuf,this.ackbuf.length);
 					this.ackport.receive(this.ack);
 					byte[] str = this.ack.getData();
 					String cmp = new String(str);
-					if(!cmp.equals(this.seqnum)) {
-						System.out.println("timeout");
-						ackd=2;
-						isRunning=false;
-					}else {
-						this.seqport.send(this.packet);
-						ackd=0;
-					}
+					System.out.println(cmp);
+					ackd=0;
+					isRunning=false;
 				}catch(Exception e) {
 			    		e.printStackTrace(System.out);
 			

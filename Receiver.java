@@ -1,4 +1,3 @@
-package Assignment_Two;
 
 
 
@@ -39,8 +38,9 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
     int total=0,inorder=0,prev,starts=0;
     
     public static DatagramSocket seq = null;
-    public static DatagramSocket ack=null;
-    String
+    public  DatagramSocket ack=null;
+	String host;
+
 
     StringReader read = null;
 	public Socket ReceiverSocket = null;
@@ -55,22 +55,23 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 		String sAddress = host_text_field.getText();
 		int rPort = Integer.parseInt(port_text_field.getText());
 		String fileName = body_text_area.getText();
-		
 		System.out.println("Run called..");
 		
 		byte[] buf =new byte[124];
 		byte[] seqbyte = new byte[4];
 		byte[] isEot = new byte[1];
-		
+		byte[] ackbuf = new byte[4];
 		String prev,current;
 		prev="0";
 		try {
+			this.ack=new DatagramSocket();
+
 			File infile = new File("testme.txt");
 			BufferedWriter writef = new BufferedWriter(new FileWriter(infile));
 			ByteArrayOutputStream input= new ByteArrayOutputStream(124);
 			DatagramPacket packet = new DatagramPacket(buf,buf.length);
 			FileOutputStream stream = new FileOutputStream("testme.txt");
-			
+			DatagramPacket ack = new DatagramPacket(ackbuf,ackbuf.length,InetAddress.getByName("localhost"),2223);
 			while(true) {
 				packet.setLength(buf.length);
 				this.seq.receive(packet);
@@ -84,9 +85,10 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 				ByteArrayOutputStream readseq = new ByteArrayOutputStream(4);
 				ByteArrayOutputStream readeot = new ByteArrayOutputStream(1);
 				readseq.write(seqbyte);
+				ackbuf=readseq.toByteArray();
+				this.ack.send(ack);
 				readeot.write(isEot);
 				String seqnum=readseq.toString();
-			
 				String eot = readeot.toString();
 				System.out.println("seqnum"+seqnum);
 				System.out.println("eot"+eot);
@@ -99,6 +101,7 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 					stream.write(str, 6, 118);
 
 				}
+				this.ack.send(ack);
 				
 				total++;
 			}
