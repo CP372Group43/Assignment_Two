@@ -35,19 +35,15 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
     public static JButton reliable_toggle_button;
     
     public static  Boolean is_reliable = false;
-    int total=0,inorder=0,prev,starts=0;
+    int total=0,prev;
+    Integer inorder = new Integer(0);
     
-    public static DatagramSocket seq = null;
-<<<<<<< HEAD
+    public  DatagramSocket seq = null;
     public  DatagramSocket ack=null;
-	String host;
+	String host,rcvport,sendport,file;
 
-=======
-    public static DatagramSocket ack=null;
->>>>>>> c3a9d29a7e8fa32233ca2f1752b547a5e71d872b
 
     StringReader read = null;
-	public Socket ReceiverSocket = null;
 	
 	public static void main(String[] args) {
 		Receiver Reciever = new Receiver();
@@ -55,28 +51,23 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 	}
 	
 	public void run() {
-		int sPort = Integer.parseInt(senderport_text_field.getText());
-		String sAddress = host_text_field.getText();
-		int rPort = Integer.parseInt(port_text_field.getText());
-		String fileName = body_text_area.getText();
 		System.out.println("Run called..");
-		
 		byte[] buf =new byte[124];
 		byte[] seqbyte = new byte[4];
 		byte[] isEot = new byte[1];
 		byte[] ackbuf = new byte[4];
-		String prev,current;
-		prev="0";
 		try {
+			this.seq=new DatagramSocket(new Integer(this.rcvport));
 			this.ack=new DatagramSocket();
 
-			File infile = new File("testme.txt");
+			File infile = new File(this.file);
 			BufferedWriter writef = new BufferedWriter(new FileWriter(infile));
 			ByteArrayOutputStream input= new ByteArrayOutputStream(124);
 			DatagramPacket packet = new DatagramPacket(buf,buf.length);
-			FileOutputStream stream = new FileOutputStream("testme.txt");
-			DatagramPacket ack = new DatagramPacket(ackbuf,ackbuf.length,InetAddress.getByName("localhost"),2223);
+			FileOutputStream stream = new FileOutputStream(infile);
+			DatagramPacket ack = new DatagramPacket(ackbuf,ackbuf.length,InetAddress.getByName(this.host),new Integer(this.sendport));
 			while(true) {
+				if(this.is_reliable==true) {
 				packet.setLength(buf.length);
 				this.seq.receive(packet);
 				byte[] str = packet.getData();
@@ -96,37 +87,86 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 				String eot = readeot.toString();
 				System.out.println("seqnum"+seqnum);
 				System.out.println("eot"+eot);
-			
+				
 				if(!eot.equals("0") && this.total!=0) {
-					stream.write(str, 6, 118);
+					stream.write(str, 5, 119);
 					System.exit(1);
 
 				}else{
-					stream.write(str, 6, 118);
-
+					stream.write(str, 5, 119);
 				}
+				ackbuf=readseq.toByteArray();
 				this.ack.send(ack);
-				
+				inorder++;
 				total++;
+			}else if(this.is_reliable==false){
+				packet.setLength(buf.length);
+				this.seq.receive(packet);
+				byte[] str = packet.getData();
+				System.out.println("str"+str.length);
+				seqbyte[0]= str[0];
+				seqbyte[1]= str[1];
+				seqbyte[2]= str[2];
+				seqbyte[3]= str[3];
+				isEot[0]=str[4];
+				ByteArrayOutputStream readseq = new ByteArrayOutputStream(4);
+				ByteArrayOutputStream readeot = new ByteArrayOutputStream(1);
+				readseq.write(seqbyte);
+				ackbuf=readseq.toByteArray();
+				this.ack.send(ack);
+				readeot.write(isEot);
+				String seqnum=readseq.toString();
+				String eot = readeot.toString();
+				System.out.println("seqnum"+seqnum);
+				System.out.println("eot"+eot);
+			if(total%10==0) {
+				if(!eot.equals("0") && this.total!=0) {
+					stream.write(str, 5, 119);
+					System.exit(1);
+
+				}else{
+					stream.write(str, 5, 119);
+				}
+				ackbuf=readseq.toByteArray();
+				this.ack.send(ack);
+				total++;
+			}else {
+				if(!eot.equals("0") && this.total!=0) {
+					stream.write(str, 5, 119);
+					System.exit(1);
+
+				}else{
+					stream.write(str, 5, 119);
+				}
+				ackbuf=readseq.toByteArray();
+				this.ack.send(ack);
+				total++;
+				inorder++;
+				}
 			}
+			this.rec_packets_text_field.setText(this.inorder.toString());
+
+		}
 			//write.close();
-		}catch(Exception e){
+		}catch(FileNotFoundException e){
+			this.response_text_area.setText("file not found");
+		}catch(Exception e) {
 			e.printStackTrace(System.out);
+
 		}
 		
 	}
 	
 	public void transfer() {
-		int sPort = Integer.parseInt(senderport_text_field.getText());
-		String sAddress = host_text_field.getText();
-		int rPort = Integer.parseInt(port_text_field.getText());
-		String fileName = body_text_area.getText();
+		this.sendport = senderport_text_field.getText();
+		this.host = host_text_field.getText();
+		this.rcvport = port_text_field.getText();
+		this.file = body_text_area.getText();
 		
 		try {
 			if(this.seq != null) {
 				seq.close();
 			}
-			this.seq = new DatagramSocket(rPort);
 			this.run();
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -153,7 +193,7 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 
     		// sender port field
         	JPanel sender_port = new JPanel();
-        	sender_port.add(new JLabel("Sender Port: "));
+        	sender_port.add(new JLabel("Sending Port: "));
     		senderport_text_field = new JTextField("",10);
     		senderport_text_field.setBackground(Color.WHITE);
     		senderport_text_field.setText("2222");
@@ -161,7 +201,7 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
     		
     		// receiver ack port field
         	JPanel receiver_port_panel = new JPanel();
-        	receiver_port_panel.add(new JLabel("Receiver Ack Port: "));
+        	receiver_port_panel.add(new JLabel("Receiving Port: "));
     		port_text_field = new JTextField("", 10);
     		port_text_field.setBackground(Color.WHITE);
     		port_text_field.setText("3333");
@@ -172,7 +212,6 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
         	file_panel.add(new JLabel("File Name: "));
     		body_text_area = new JTextField("", 10);
     		body_text_area.setBackground(Color.WHITE);
-    		body_text_area.setText("test.txt");
     		file_panel.add(body_text_area);
     		
     		// received packets 
