@@ -1,3 +1,5 @@
+package Assignment_Two;
+
 
 
 import javax.swing.JButton;
@@ -37,7 +39,8 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
     int total=0,inorder=0,prev,starts=0;
     
     public static DatagramSocket seq = null;
-    
+    public static DatagramSocket ack=null;
+    String
 
     StringReader read = null;
 	public Socket ReceiverSocket = null;
@@ -67,6 +70,7 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 			ByteArrayOutputStream input= new ByteArrayOutputStream(124);
 			DatagramPacket packet = new DatagramPacket(buf,buf.length);
 			FileOutputStream stream = new FileOutputStream("testme.txt");
+			
 			while(true) {
 				packet.setLength(buf.length);
 				this.seq.receive(packet);
@@ -95,6 +99,7 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 					stream.write(str, 6, 118);
 
 				}
+				
 				total++;
 			}
 			//write.close();

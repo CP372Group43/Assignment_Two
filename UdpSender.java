@@ -1,3 +1,4 @@
+package Assignment_Two;
 
 
 import java.io.* ;
@@ -16,10 +17,10 @@ public class UdpSender implements Runnable{
 	DatagramSocket ackport = null;
 	byte[] ackbuf = new byte[4];
 	byte[] buf = new byte[118];
-	public UdpSender(DatagramSocket s,String file, int timeout) throws Exception{
+	public UdpSender(DatagramSocket s,String file, int timeout,DatagramSocket ack) throws Exception{
 		this.file=file;
 		this.timeout=timeout;
-		this.ackport=ackport;
+		this.ackport=ack;
 		this.seqport=s;
 		this.seqnum="0000";
 		this.isEot="0";
@@ -76,6 +77,12 @@ public class UdpSender implements Runnable{
 					System.out.println(read.toString());
 					offdata=read.toByteArray();
 					this.seqport.send(this.packet);
+					
+					
+					int acktype=this.timeout(offdata);
+					if(acktype==1 ||acktype==2) {
+						System.exit(1);
+					}
 					Integer nextseq= Integer.parseInt(this.seqnum)+1;
 					int len=nextseq.toString().length();
 					if(len==4) {
@@ -87,8 +94,6 @@ public class UdpSender implements Runnable{
 					}else if(len==1) {
 						this.seqnum="000"+nextseq.toString();
 					}
-					
-					//this.timeout();
 				}catch(Exception e) {
 	        			e.printStackTrace(System.out);
 	
@@ -115,7 +120,10 @@ public class UdpSender implements Runnable{
 					System.out.println(read.toString());
 					offdata=read.toByteArray();
 					this.seqport.send(this.packet);
-	//				this.timeout();
+					int acktype=this.timeout(offdata);
+					if(acktype==1 ||acktype==2) {
+						System.exit(1);
+					}
 				}catch(Exception e) {
 				}
 				
@@ -123,16 +131,33 @@ public class UdpSender implements Runnable{
 			
 		}
 	}
-	public void timeout() throws Exception{
+	//returns 0, good Ack
+	//returns 1, timeout ACK
+	//returns 2, out of order ACK
+	public int timeout(byte[] offdata) throws Exception{
 		long starttime = System.currentTimeMillis();
+		int ackd = 0;
 		boolean isRunning = true;
 		while(isRunning) {
+			
 			if(System.currentTimeMillis()>=(starttime+this.timeout)) {
 				isRunning= false;
+				ackd=1;
+				System.out.println("timeout");
 			}else {
 				try {
-					this.ack = new DatagramPacket(ackbuf,ackbuf.length);
+					this.ack = new DatagramPacket(this.ackbuf,this.ackbuf.length);
 					this.ackport.receive(this.ack);
+					byte[] str = this.ack.getData();
+					String cmp = new String(str);
+					if(!cmp.equals(this.seqnum)) {
+						System.out.println("timeout");
+						ackd=2;
+						isRunning=false;
+					}else {
+						this.seqport.send(this.packet);
+						ackd=0;
+					}
 				}catch(Exception e) {
 			    		e.printStackTrace(System.out);
 			
@@ -140,5 +165,6 @@ public class UdpSender implements Runnable{
 				}
 			}
 		}
+		return ackd;
 	}
 }
