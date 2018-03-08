@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of 496132e... acks
 
 
 import javax.swing.JButton;
@@ -38,10 +41,15 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
     int total=0,prev;
     Integer inorder = new Integer(0);
     
+<<<<<<< HEAD
     public  DatagramSocket seq = null;
     public  DatagramSocket ack=null;
 	String host,rcvport,sendport,file;
 
+=======
+    public static DatagramSocket seq = null;
+    
+>>>>>>> parent of 496132e... acks
 
     StringReader read = null;
 	
@@ -64,8 +72,12 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 			BufferedWriter writef = new BufferedWriter(new FileWriter(infile));
 			ByteArrayOutputStream input= new ByteArrayOutputStream(124);
 			DatagramPacket packet = new DatagramPacket(buf,buf.length);
+<<<<<<< HEAD
 			FileOutputStream stream = new FileOutputStream(this.file);
 			DatagramPacket ack = new DatagramPacket(ackbuf,ackbuf.length,InetAddress.getByName(this.host),new Integer(this.sendport));
+=======
+			FileOutputStream stream = new FileOutputStream("testme.txt");
+>>>>>>> parent of 496132e... acks
 			while(true) {
 				if(this.is_reliable==true) {
 				System.out.println("reliable");
@@ -127,6 +139,7 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 					stream.write(str, 5, 119);
 
 				}
+<<<<<<< HEAD
 				ackbuf=readseq.toByteArray();
 				this.ack.send(ack);
 				this.total++;
@@ -143,6 +156,9 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 				this.total++;
 				this.inorder++;
 				}
+=======
+				total++;
+>>>>>>> parent of 496132e... acks
 			}
 			this.rec_packets_text_field.setText(this.inorder.toString());
 
