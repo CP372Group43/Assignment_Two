@@ -64,10 +64,11 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 			BufferedWriter writef = new BufferedWriter(new FileWriter(infile));
 			ByteArrayOutputStream input= new ByteArrayOutputStream(124);
 			DatagramPacket packet = new DatagramPacket(buf,buf.length);
-			FileOutputStream stream = new FileOutputStream(infile);
+			FileOutputStream stream = new FileOutputStream(this.file);
 			DatagramPacket ack = new DatagramPacket(ackbuf,ackbuf.length,InetAddress.getByName(this.host),new Integer(this.sendport));
 			while(true) {
 				if(this.is_reliable==true) {
+				System.out.println("reliable");
 				packet.setLength(buf.length);
 				this.seq.receive(packet);
 				byte[] str = packet.getData();
@@ -80,8 +81,6 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 				ByteArrayOutputStream readseq = new ByteArrayOutputStream(4);
 				ByteArrayOutputStream readeot = new ByteArrayOutputStream(1);
 				readseq.write(seqbyte);
-				ackbuf=readseq.toByteArray();
-				this.ack.send(ack);
 				readeot.write(isEot);
 				String seqnum=readseq.toString();
 				String eot = readeot.toString();
@@ -90,6 +89,7 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 				
 				if(!eot.equals("0") && this.total!=0) {
 					stream.write(str, 5, 119);
+					System.out.println(str.toString());
 					System.exit(1);
 
 				}else{
@@ -97,8 +97,8 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 				}
 				ackbuf=readseq.toByteArray();
 				this.ack.send(ack);
-				inorder++;
-				total++;
+				this.inorder++;
+				this.total++;
 			}else if(this.is_reliable==false){
 				packet.setLength(buf.length);
 				this.seq.receive(packet);
@@ -112,24 +112,24 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 				ByteArrayOutputStream readseq = new ByteArrayOutputStream(4);
 				ByteArrayOutputStream readeot = new ByteArrayOutputStream(1);
 				readseq.write(seqbyte);
-				ackbuf=readseq.toByteArray();
-				this.ack.send(ack);
 				readeot.write(isEot);
 				String seqnum=readseq.toString();
 				String eot = readeot.toString();
 				System.out.println("seqnum"+seqnum);
 				System.out.println("eot"+eot);
-			if(total%10==0) {
+			if(this.total%10==0) {
 				if(!eot.equals("0") && this.total!=0) {
 					stream.write(str, 5, 119);
+
 					System.exit(1);
 
 				}else{
 					stream.write(str, 5, 119);
+
 				}
 				ackbuf=readseq.toByteArray();
 				this.ack.send(ack);
-				total++;
+				this.total++;
 			}else {
 				if(!eot.equals("0") && this.total!=0) {
 					stream.write(str, 5, 119);
@@ -140,8 +140,8 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 				}
 				ackbuf=readseq.toByteArray();
 				this.ack.send(ack);
-				total++;
-				inorder++;
+				this.total++;
+				this.inorder++;
 				}
 			}
 			this.rec_packets_text_field.setText(this.inorder.toString());
