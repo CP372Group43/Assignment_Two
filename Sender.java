@@ -43,7 +43,12 @@ public class Sender implements Runnable{
 	    	System.out.print("Sender On \n");
 		try {			
 			while(true) {
-				// wait for next transfer request from receiver
+				byte[] buf =new byte[124];
+				DatagramPacket packet = new DatagramPacket(buf,buf.length);
+				packet.setLength(buf.length);
+				 				// wait for next transfer request from receiver
+				ackSocket.receive(packet);
+
 				// send receiver the data
 				new UdpSender(this.serversocket, this.datafile,this.timeout,ackSocket);
 			}
