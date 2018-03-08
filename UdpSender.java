@@ -26,6 +26,16 @@ public class UdpSender implements Runnable{
 		this.file=file;
 		this.time=timeout;
 		this.ackport=ack;
+=======
+	byte[] buf = new byte[118];
+	public UdpSender(DatagramSocket s,String file, int timeout) throws Exception{
+		this.file=file;
+		this.timeout=timeout;
+		this.ackport=ackport;
+<<<<<<< HEAD
+>>>>>>> parent of 496132e... acks
+=======
+>>>>>>> parent of 496132e... acks
 		this.seqport=s;
 		this.seqnum="0000";
 		this.isEot="0";
@@ -92,6 +102,8 @@ public class UdpSender implements Runnable{
 					System.out.println(read.toString());
 					offdata=read.toByteArray();
 					this.seqport.send(this.packet);
+<<<<<<< HEAD
+<<<<<<< HEAD
 					
 					
 					int acktype=this.timeout(offdata);
@@ -99,6 +111,10 @@ public class UdpSender implements Runnable{
 						System.out.println("exit");
 						System.exit(1);
 					}
+=======
+>>>>>>> parent of 496132e... acks
+=======
+>>>>>>> parent of 496132e... acks
 					Integer nextseq= Integer.parseInt(this.seqnum)+1;
 					int len=nextseq.toString().length();
 					if(len==4) {
@@ -110,6 +126,8 @@ public class UdpSender implements Runnable{
 					}else if(len==1) {
 						this.seqnum="000"+nextseq.toString();
 					}
+					
+					//this.timeout();
 				}catch(Exception e) {
 	        			e.printStackTrace(System.out);
 	
@@ -136,10 +154,7 @@ public class UdpSender implements Runnable{
 					System.out.println(read.toString());
 					offdata=read.toByteArray();
 					this.seqport.send(this.packet);
-					int acktype=this.timeout(offdata);
-					if(acktype==1 ||acktype==2) {
-						System.exit(1);
-					}
+	//				this.timeout();
 				}catch(Exception e) {
 				}
 				
@@ -147,15 +162,16 @@ public class UdpSender implements Runnable{
 			
 		}
 	}
-	//returns 0, good Ack
-	//returns 1, timeout ACK
-	//returns 2, out of order ACK
-	public int timeout(byte[] offdata) throws Exception{
+	public void timeout() throws Exception{
 		long starttime = System.currentTimeMillis();
-		int ackd = 0;
 		boolean isRunning = true;
 		while(isRunning) {
+<<<<<<< HEAD
 			System.out.println("loopin");
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> c73dd41fe0b65b5934cc06b119e01b83544e0661
 			if(System.currentTimeMillis()>(starttime+this.time)) {
 				System.out.println("bad");
 
@@ -173,6 +189,22 @@ public class UdpSender implements Runnable{
 					System.out.println(cmp);
 					ackd=0;
 					isRunning=false;
+=======
+			if(System.currentTimeMillis()>=(starttime+this.timeout)) {
+				isRunning= false;
+			}else {
+				try {
+					this.ack = new DatagramPacket(ackbuf,ackbuf.length);
+					this.ackport.receive(this.ack);
+>>>>>>> parent of 496132e... acks
+=======
+			if(System.currentTimeMillis()>=(starttime+this.timeout)) {
+				isRunning= false;
+			}else {
+				try {
+					this.ack = new DatagramPacket(ackbuf,ackbuf.length);
+					this.ackport.receive(this.ack);
+>>>>>>> parent of 496132e... acks
 				}catch(Exception e) {
 			    		e.printStackTrace(System.out);
 			
@@ -180,6 +212,5 @@ public class UdpSender implements Runnable{
 				}
 			}
 		}
-		return ackd;
 	}
 }

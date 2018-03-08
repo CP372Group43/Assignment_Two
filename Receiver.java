@@ -1,4 +1,10 @@
+<<<<<<< HEAD
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of 496132e... acks
+=======
+>>>>>>> parent of 496132e... acks
 
 
 import javax.swing.JButton;
@@ -37,14 +43,28 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
     public static  Boolean is_reliable = false;
     int total=0,inorder=0,prev,starts=0;
     
+<<<<<<< HEAD
     public static DatagramSocket seq = null;
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
+    public  DatagramSocket seq = null;
+>>>>>>> c73dd41fe0b65b5934cc06b119e01b83544e0661
     public  DatagramSocket ack=null;
 	String host;
 
 =======
+<<<<<<< HEAD
     public static DatagramSocket ack=null;
 >>>>>>> c3a9d29a7e8fa32233ca2f1752b547a5e71d872b
+=======
+    public static DatagramSocket seq = null;
+    
+<<<<<<< HEAD
+>>>>>>> parent of 496132e... acks
+=======
+>>>>>>> parent of 496132e... acks
+>>>>>>> c73dd41fe0b65b5934cc06b119e01b83544e0661
 
     StringReader read = null;
 	public Socket ReceiverSocket = null;
@@ -77,6 +97,12 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 <<<<<<< HEAD
 			FileOutputStream stream = new FileOutputStream(this.file);
 			DatagramPacket ack = new DatagramPacket(ackbuf,ackbuf.length,InetAddress.getByName(this.host),new Integer(this.sendport));
+=======
+			FileOutputStream stream = new FileOutputStream("testme.txt");
+<<<<<<< HEAD
+>>>>>>> parent of 496132e... acks
+=======
+>>>>>>> parent of 496132e... acks
 			while(true) {
 				if(this.is_reliable==true) {
 				System.out.println("reliable");
@@ -144,6 +170,8 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 					stream.write(str, 5, 119);
 
 				}
+<<<<<<< HEAD
+<<<<<<< HEAD
 				ackbuf=readseq.toByteArray();
 				this.ack.send(ack);
 				this.total++;
@@ -168,9 +196,16 @@ public class Receiver extends JFrame implements ActionListener,Runnable {
 				this.inorder++;
 				}
 =======
+<<<<<<< HEAD
 				
 				total++;
 >>>>>>> parent of 4d453c8... varnames
+=======
+=======
+>>>>>>> parent of 496132e... acks
+				total++;
+>>>>>>> parent of 496132e... acks
+>>>>>>> c73dd41fe0b65b5934cc06b119e01b83544e0661
 			}
 			//write.close();
 		}catch(Exception e){
