@@ -31,8 +31,8 @@ public class Sender implements Runnable{
 		this.datafile=sendfile;
 		this.timeout=time;
 		try {
-			this.serversocket = new DatagramSocket();
-			this.ackSocket=new DatagramSocket(this.hostackport);
+			this.serversocket = new DatagramSocket(2222);
+			this.ackSocket=new DatagramSocket(2223);
 			this.run();
 
 		}catch(Exception e) {
@@ -45,7 +45,7 @@ public class Sender implements Runnable{
 			while(true) {
 				// wait for next transfer request from receiver
 				// send receiver the data
-				new UdpSender(this.serversocket, this.datafile,this.timeout,this.ackSocket,this.hostport,this.hostaddress);
+				new UdpSender(this.serversocket, this.datafile,this.timeout,this.ackSocket);
 			}
 		}catch(Exception e){
 			e.printStackTrace(System.out);

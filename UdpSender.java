@@ -9,23 +9,20 @@ public class UdpSender implements Runnable{
 
 	String file;
 	long time;
-	String seqnum,isEot,sendaddr;
+	String seqnum,isEot;
 	DatagramPacket packet = null;
 	DatagramPacket ack=null;
 	DatagramSocket seqport = null;
 	DatagramSocket ackport = null;
 	byte[] ackbuf = new byte[4];
 	byte[] buf = new byte[119];
-	int sendport;
-	public UdpSender(DatagramSocket s,String file, long timeout,DatagramSocket ack,int port,String address) throws Exception{
+	public UdpSender(DatagramSocket s,String file, long timeout,DatagramSocket ack) throws Exception{
 		this.file=file;
 		this.time=timeout;
 		this.ackport=ack;
 		this.seqport=s;
 		this.seqnum="0000";
 		this.isEot="0";
-		this.sendport=port;
-		this.sendaddr=address;
 		try {
 		this.run();
 		}catch(Exception e) {
@@ -36,13 +33,10 @@ public class UdpSender implements Runnable{
 		
 		
 		try {
-			FileInputStream reader = new FileInputStream(this.file);
+			FileInputStream reader = new FileInputStream("test.txt");
 			SendPacket(reader);
 			reader.close();
-		}catch(FileNotFoundException e) {
-			System.out.println("file not found");
-			System.exit(1);
-	}catch(Exception e) {
+		}catch(Exception e) {
     		e.printStackTrace(System.out);
 		}
 	}
@@ -57,7 +51,7 @@ public class UdpSender implements Runnable{
 		while(isRun) {
 			bytestr=reader.read(this.buf);
 			String input;
-			this.packet = new DatagramPacket(offdata,offdata.length, InetAddress.getByName(this.sendaddr),this.sendport);
+			this.packet = new DatagramPacket(offdata,offdata.length, InetAddress.getByName("localhost"),4000);
 			if(bytestr!=-1 && reader.available()>=1) {
 				try {				
 					ByteArrayOutputStream read = new ByteArrayOutputStream(124);
@@ -70,7 +64,6 @@ public class UdpSender implements Runnable{
 					byte[] c= out.toByteArray();
 					read.write(c);
 					read.write(this.buf);
-					System.out.println(offdata);
 
 					offdata=read.toByteArray();
 					this.seqport.send(this.packet);
@@ -78,7 +71,6 @@ public class UdpSender implements Runnable{
 					
 					int acktype=this.timeout(offdata);
 					if(acktype==1 ||acktype==2) {
-						System.out.println("exit");
 						System.exit(1);
 					}
 					Integer nextseq= Integer.parseInt(this.seqnum)+1;
